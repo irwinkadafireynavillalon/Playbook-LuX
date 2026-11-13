@@ -16,6 +16,7 @@ import com.example.util.CoverGenerator
 import com.example.util.ExtractedChapter
 import com.example.util.OpusAudioEncoder
 import com.example.util.TextFileExtractor
+import com.example.util.TextSyntaxReviewer
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -87,6 +88,8 @@ data class ConverterEngineState(
     val queue: List<ConversionJobUi> = emptyList(),
     val isTestingServer: Boolean = false,
     val lastCompletedBookId: String? = null,
+    val lastCompletedFolderPath: String? = null,
+    val lastCompletedCodecTag: String? = null,
     val lastMessage: String? = null
 )
 
@@ -184,6 +187,20 @@ class TtsConverterEngine(
                 if (!completedIndices.contains(idx)) return idx
             }
             return totalChapters
+        }
+
+        fun sortVoicesCleanly(voices: List<TtsVoiceOption>): List<TtsVoiceOption> {
+            val langOrder = mapOf("es" to 0, "en" to 1, "pt" to 2, "fr" to 3, "it" to 4, "de" to 5)
+            val esTagOrder = mapOf("es-es" to 0, "es-mx" to 1, "es-us" to 2, "es-ar" to 3)
+            return voices.sortedWith(
+                compareBy<TtsVoiceOption>(
+                    { it.requiresNetwork },
+                    { langOrder[it.languageTag.substringBefore("-").lowercase()] ?: 9 },
+                    { esTagOrder[it.languageTag.lowercase()] ?: 8 },
+                    { it.languageTag.lowercase() },
+                    { it.displayName.lowercase() }
+                )
+            )
         }
     }
 
@@ -290,17 +307,20 @@ class TtsConverterEngine(
         } catch (_: Exception) {
             emptySet()
         }
-        return rawVoices
+        val mapped = rawVoices
             .filter { !it.isNetworkConnectionRequired || it.locale.language in listOf("es", "en", "fr", "de", "it", "pt") }
             .map { v ->
                 val langTag = v.locale.toLanguageTag()
-                val friendlyName = v.name
+                val shortCode = v.name
+                    .substringAfterLast("-x-")
+                    .substringBefore("-local")
+                    .substringBefore("-network")
                     .replace("-language", "")
-                    .replace("es-es-x-", "Español ")
-                    .replace("es-us-x-", "Español US ")
-                    .replace("en-us-x-", "Inglés US ")
-                    .replace("-local", " (Offline)")
-                    .replace("-network", " (Red)")
+                    .uppercase()
+                    .take(8)
+                val country = v.locale.displayCountry.ifBlank { v.locale.displayLanguage }
+                val modeTag = if (v.isNetworkConnectionRequired) "Red" else "Offline"
+                val friendlyName = "${v.locale.displayLanguage.replaceFirstChar { it.uppercase() }} ($country) • $shortCode [$modeTag]"
                 TtsVoiceOption(
                     id = v.name,
                     displayName = friendlyName,
@@ -309,7 +329,7 @@ class TtsConverterEngine(
                     requiresNetwork = v.isNetworkConnectionRequired
                 )
             }
-            .sortedWith(compareBy<TtsVoiceOption> { it.requiresNetwork }.thenBy { it.languageTag }.thenBy { it.displayName })
+        return sortVoicesCleanly(mapped)
     }
 
     fun previewVoice(voiceId: String?, languageTag: String, speed: Float, pitch: Float) {
@@ -571,10 +591,14 @@ class TtsConverterEngine(
 
         try {
             val activeEngine = selectEngine(job.engineMode)
-            val chapters = TextFileExtractor.loadChaptersForTextItem(context, job.textItem)
+            val loadedChapters = TextFileExtractor.loadChaptersForTextItem(context, job.textItem)
                 .ifEmpty {
                     listOf(ExtractedChapter("Capítulo 1", job.textItem.title))
                 }
+            val chapters = TextSyntaxReviewer.reviewChapters(
+                chapters = loadedChapters,
+                languageCode = job.languageTag.substringBefore("-")
+            ).reviewedChapters.ifEmpty { loadedChapters }
 
             if (job.engineMode == TtsEngineMode.LOCAL_DEVICE) {
                 withContext(Dispatchers.Main) {
@@ -820,11 +844,14 @@ class TtsConverterEngine(
             )
             textItemRepository.updateStatus(job.textItem.id, "CONVERTED")
 
+            val primaryCodec = orderedEntries.firstOrNull()?.format?.uppercase() ?: "OPUS"
             _state.update { st ->
                 st.copy(
                     queue = st.queue.filterNot { it.id == jobId },
                     lastCompletedBookId = bookId,
-                    lastMessage = "¡Audiolibro \"${job.textItem.title}\" normalizado (-16 LUFS), codificado a Opus y guardado!"
+                    lastCompletedFolderPath = bookDir.absolutePath,
+                    lastCompletedCodecTag = primaryCodec,
+                    lastMessage = "¡Audiolibro \"${job.textItem.title}\" normalizado (-16 LUFS), codificado a $primaryCodec y guardado!"
                 )
             }
         } catch (_: ServiceTimeoutException) {

@@ -41,6 +41,8 @@ palette = "1.0.0"
 splashscreen = "1.0.1"
 mlkitTranslate = "17.0.3"
 mlkitLanguageId = "17.0.6"
+mlkitTextRecognition = "16.0.1"
+pdfboxAndroid = "2.0.27.0"
 lottieCompose = "6.6.0"
 
 
@@ -96,6 +98,8 @@ androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", versi
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 mlkit-translate = { group = "com.google.mlkit", name = "translate", version.ref = "mlkitTranslate" }
 mlkit-language-id = { group = "com.google.mlkit", name = "language-id", version.ref = "mlkitLanguageId" }
+mlkit-text-recognition = { group = "com.google.mlkit", name = "text-recognition", version.ref = "mlkitTextRecognition" }
+pdfbox-android = { group = "com.tom-roush", name = "pdfbox-android", version.ref = "pdfboxAndroid" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottieCompose" }
 
 

@@ -106,6 +106,8 @@ dependencies {
   implementation(libs.retrofit)
   implementation(libs.mlkit.translate)
   implementation(libs.mlkit.language.id)
+  implementation(libs.mlkit.text.recognition)
+  implementation(libs.pdfbox.android)
   implementation(libs.lottie.compose)
   testImplementation(libs.androidx.compose.ui.test.junit4)
   testImplementation(libs.androidx.core)

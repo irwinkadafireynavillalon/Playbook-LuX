@@ -94,14 +94,16 @@ class ConversionService : Service() {
                 } else if (st.queue.none { !it.isCompleted && !it.isPaused && it.error == null }) {
                     val hasPausedTimeoutJob = st.queue.any { it.isPaused }
                     if (!hasPausedTimeoutJob && st.lastCompletedBookId != null) {
-                        NotificationChannels.postProgress(
+                        val tone = runCatching {
+                            app.container.settingsStore.getNotificationToneSync()
+                        }.getOrDefault(com.example.data.datastore.NotificationTone.LUX_CHIME)
+
+                        NotificationChannels.postCompletionAlert(
                             context = this@ConversionService,
-                            channelId = NotificationChannels.CHANNEL_CONVERSION,
+                            tone = tone,
                             notificationId = NotificationChannels.NOTIF_ID_CONVERSION + 1,
                             title = "Audiolibro convertido",
-                            contentText = st.lastMessage ?: "Listo en tu Bóveda (formato Opus).",
-                            progressPercent = null,
-                            ongoing = false
+                            contentText = st.lastMessage ?: "Listo en tu Bóveda (formato Opus)."
                         )
                     }
                     stopForeground(STOP_FOREGROUND_REMOVE)

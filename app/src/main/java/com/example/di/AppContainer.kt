@@ -75,6 +75,6 @@ class AppContainer(private val context: Context) {
     }
 
     val publicBookSearchEngine: PublicBookSearchEngine by lazy {
-        PublicBookSearchEngine(context, textItemRepository, applicationScope)
+        PublicBookSearchEngine(context, textItemRepository, settingsStore, applicationScope)
     }
 }

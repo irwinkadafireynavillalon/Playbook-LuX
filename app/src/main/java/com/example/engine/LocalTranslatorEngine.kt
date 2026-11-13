@@ -5,7 +5,9 @@ import com.example.data.local.entity.TextItem
 import com.example.data.local.repository.TextItemRepository
 import com.example.util.ExtractedChapter
 import com.example.util.NotificationChannels
+import com.example.util.SyntaxReviewReport
 import com.example.util.TextFileExtractor
+import com.example.util.TextSyntaxReviewer
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.languageid.LanguageIdentification
@@ -29,7 +31,7 @@ data class TranslatorEngineState(
     val selectedTextItem: TextItem? = null,
     val detectedSourceLang: String = "en",
     val targetLang: String = "es",
-    val currentStep: Int = -1, // -1 idle, 0..4 steps, 5 completed
+    val currentStep: Int = -1, // -1 idle, 0..4 steps
     val progress: Float = 0f,
     val isRunning: Boolean = false,
     val isPaused: Boolean = false,
@@ -37,7 +39,9 @@ data class TranslatorEngineState(
     val previewOriginal: String = "",
     val previewTranslated: String = "",
     val errorMessage: String? = null,
-    val completedTextItemId: String? = null
+    val completedTextItemId: String? = null,
+    val preSyntaxReport: SyntaxReviewReport? = null,
+    val postSyntaxReport: SyntaxReviewReport? = null
 )
 
 class LocalTranslatorEngine(
@@ -57,7 +61,9 @@ class LocalTranslatorEngine(
                 selectedTextItem = item,
                 detectedSourceLang = item.detectedLang.ifBlank { "en" },
                 errorMessage = null,
-                completedTextItemId = null
+                completedTextItemId = null,
+                preSyntaxReport = null,
+                postSyntaxReport = null
             )
         }
         detectLanguageForItem(item)
@@ -76,7 +82,13 @@ class LocalTranslatorEngine(
             try {
                 val chapters = TextFileExtractor.loadChaptersForTextItem(context, item)
                 val sample = chapters.firstOrNull()?.content?.take(600) ?: item.title
-                _state.update { it.copy(previewOriginal = sample.take(350)) }
+                val preCheck = TextSyntaxReviewer.reviewChapters(chapters, item.detectedLang)
+                _state.update {
+                    it.copy(
+                        previewOriginal = sample.take(350),
+                        preSyntaxReport = preCheck
+                    )
+                }
 
                 val identifier = LanguageIdentification.getClient()
                 val langCode = identifier.identifyLanguage(sample).awaitTask()
@@ -95,6 +107,41 @@ class LocalTranslatorEngine(
                     st.copy(detectedSourceLang = cleanCode, targetLang = autoTarget)
                 }
             } catch (_: Exception) {
+            }
+        }
+    }
+
+    fun runManualSyntaxReviewOnSelected() {
+        val item = _state.value.selectedTextItem ?: return
+        val lang = _state.value.detectedSourceLang
+        appScope.launch(Dispatchers.IO) {
+            val chapters = TextFileExtractor.loadChaptersForTextItem(context, item)
+            val report = TextSyntaxReviewer.reviewChapters(chapters, lang)
+            if (report.totalAutoFixed > 0) {
+                val updated = TextFileExtractor.saveEditedTextItem(
+                    context = context,
+                    item = item,
+                    newTitle = item.title,
+                    newAuthor = item.author,
+                    newLang = lang,
+                    editedChapters = report.reviewedChapters
+                )
+                textItemRepository.updateTextItem(updated)
+                _state.update {
+                    it.copy(
+                        selectedTextItem = updated,
+                        preSyntaxReport = report,
+                        previewOriginal = report.reviewedChapters.firstOrNull()?.content?.take(350) ?: it.previewOriginal,
+                        statusText = "Revisión previa: ${report.buildCompactSummary()}"
+                    )
+                }
+            } else {
+                _state.update {
+                    it.copy(
+                        preSyntaxReport = report,
+                        statusText = "Revisión previa: ${report.buildCompactSummary()}"
+                    )
+                }
             }
         }
     }
@@ -119,8 +166,21 @@ class LocalTranslatorEngine(
         }
 
         pauseFlag = false
+        TranslationService.ensureRunning(context)
         translationJob = appScope.launch(Dispatchers.IO) {
             runTranslation(item, current.detectedSourceLang, current.targetLang)
+        }
+    }
+
+    fun pauseForServiceTimeout() {
+        pauseFlag = true
+        _state.update {
+            if (it.isRunning) {
+                it.copy(
+                    isPaused = true,
+                    statusText = "En pausa (límite 6h). Pulsa Reanudar para continuar"
+                )
+            } else it
         }
     }
 
@@ -128,6 +188,7 @@ class LocalTranslatorEngine(
         translationJob?.cancel()
         translationJob = null
         pauseFlag = false
+        NotificationChannels.cancel(context, NotificationChannels.NOTIF_ID_TRANSLATION)
         _state.update {
             it.copy(
                 isRunning = false,
@@ -151,23 +212,29 @@ class LocalTranslatorEngine(
                     isPaused = false,
                     currentStep = 0,
                     progress = 0.05f,
-                    statusText = "Paso 1/5: Extrayendo capítulos…",
+                    statusText = "Paso 1/5: Extracción y revisión sintáctica previa…",
                     errorMessage = null,
-                    completedTextItemId = null
+                    completedTextItemId = null,
+                    postSyntaxReport = null
                 )
             }
 
-            val chapters = TextFileExtractor.loadChaptersForTextItem(context, item)
-            if (chapters.isEmpty()) {
+            val rawChapters = TextFileExtractor.loadChaptersForTextItem(context, item)
+            if (rawChapters.isEmpty()) {
                 throw IllegalStateException("El texto no contiene párrafos legibles.")
             }
+
+            // Pre-translation syntax & OCR break cleanup so ML Kit gets well-formed sentences
+            val preReport = TextSyntaxReviewer.reviewChapters(rawChapters, sourceCode)
+            val chapters = preReport.reviewedChapters
 
             _state.update {
                 it.copy(
                     currentStep = 1,
                     progress = 0.15f,
                     statusText = "Paso 2/5: Confirmando idioma ($sourceCode → $targetCode)…",
-                    previewOriginal = chapters.first().content.take(350)
+                    previewOriginal = chapters.first().content.take(350),
+                    preSyntaxReport = preReport
                 )
             }
 
@@ -191,8 +258,7 @@ class LocalTranslatorEngine(
                 val conditions = DownloadConditions.Builder().build()
                 translator.downloadModelIfNeeded(conditions).awaitTask()
 
-                // Translate paragraph by paragraph
-                val translatedChapters = mutableListOf<ExtractedChapter>()
+                val rawTranslatedChapters = mutableListOf<ExtractedChapter>()
                 val totalParagraphs = chapters.sumOf { ch ->
                     ch.content.split(Regex("\\n+")).count { it.isNotBlank() }.coerceAtLeast(1)
                 }.coerceAtLeast(1)
@@ -221,23 +287,12 @@ class LocalTranslatorEngine(
                                 previewTranslated = preview
                             )
                         }
-                        if (doneParagraphs % 3 == 0 || doneParagraphs == totalParagraphs) {
-                            NotificationChannels.postProgress(
-                                context = context,
-                                channelId = NotificationChannels.CHANNEL_TRANSLATION,
-                                notificationId = NotificationChannels.NOTIF_ID_TRANSLATION,
-                                title = "Traduciendo ${item.title}",
-                                contentText = "Cap. ${chIdx + 1}/${chapters.size} • ${(pct * 100).toInt()}%",
-                                progressPercent = (pct * 100).toInt(),
-                                ongoing = true
-                            )
-                        }
                     }
 
-                    translatedChapters.add(
+                    rawTranslatedChapters.add(
                         ExtractedChapter(
                             title = translatedTitle.ifBlank { chapter.title },
-                            content = TextFileExtractor.cleanPlainText(sb.toString())
+                            content = sb.toString()
                         )
                     )
                 }
@@ -246,27 +301,21 @@ class LocalTranslatorEngine(
                     it.copy(
                         currentStep = 3,
                         progress = 0.92f,
-                        statusText = "Paso 4/5: Limpieza sintáctica y formato…"
+                        statusText = "Paso 4/5: Revisión de sintaxis, ortografía y lógica…"
                     )
                 }
+
+                // Post-translation syntax & logic review in target language
+                val postReport = TextSyntaxReviewer.reviewChapters(rawTranslatedChapters, targetCode)
+                val finalChapters = postReport.reviewedChapters
 
                 val savedItem = TextFileExtractor.saveTranslatedChapters(
                     context = context,
                     sourceItem = item,
                     targetLang = targetCode,
-                    translatedChapters = translatedChapters
+                    translatedChapters = finalChapters
                 )
                 textItemRepository.insertTextItem(savedItem)
-
-                NotificationChannels.postProgress(
-                    context = context,
-                    channelId = NotificationChannels.CHANNEL_TRANSLATION,
-                    notificationId = NotificationChannels.NOTIF_ID_TRANSLATION,
-                    title = "Traducción completada",
-                    contentText = "\"${savedItem.title}\" guardado en Bóveda → Textos",
-                    progressPercent = null,
-                    ongoing = false
-                )
 
                 _state.update {
                     it.copy(
@@ -274,9 +323,10 @@ class LocalTranslatorEngine(
                         progress = 1.0f,
                         isRunning = false,
                         isPaused = false,
-                        statusText = "¡Traducción completada y guardada en Bóveda → Textos!",
-                        previewTranslated = translatedChapters.firstOrNull()?.content?.take(400) ?: "",
-                        completedTextItemId = savedItem.id
+                        statusText = "¡Traducción y revisión completadas (${postReport.buildCompactSummary()})!",
+                        previewTranslated = finalChapters.firstOrNull()?.content?.take(400) ?: "",
+                        completedTextItemId = savedItem.id,
+                        postSyntaxReport = postReport
                     )
                 }
             } finally {

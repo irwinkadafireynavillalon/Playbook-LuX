@@ -11,9 +11,22 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.ui.theme.AppThemeMode
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "playlux_settings")
+
+enum class NotificationTone(
+    val displayName: String,
+    val description: String,
+    val channelId: String
+) {
+    LUX_CHIME("Campana LuX", "Acorde cálido de tres notas", "alerts_channel_lux_chime"),
+    AMBER_PULSE("Pulso Áureo", "Dos tonos suaves tipo marimba", "alerts_channel_amber_pulse"),
+    CRYSTAL_BELL("Cristal Suave", "Timbre brillante de cristal", "alerts_channel_crystal_bell"),
+    SYSTEM_DEFAULT("Tono del sistema", "Usa el sonido predeterminado del teléfono", "alerts_channel_system"),
+    SILENT("Silencioso", "Solo notificación visual sin sonido", "alerts_channel_silent")
+}
 
 data class LoquendoServerConfig(
     val serverUrl: String = "",
@@ -53,6 +66,7 @@ class SettingsStore(private val context: Context) {
         private val KEY_REDUCE_EFFECTS = booleanPreferencesKey("reduce_effects")
         private val KEY_ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         private val KEY_GRID_VIEW = booleanPreferencesKey("vault_grid_view")
+        private val KEY_NOTIFICATION_TONE = stringPreferencesKey("notification_tone")
 
         private val KEY_LOQUENDO_URL = stringPreferencesKey("loquendo_server_url")
         private val KEY_LOQUENDO_KEY = stringPreferencesKey("loquendo_api_key")
@@ -94,6 +108,15 @@ class SettingsStore(private val context: Context) {
         }
     }
 
+    val notificationTone: Flow<NotificationTone> = context.dataStore.data.map { preferences ->
+        val toneStr = preferences[KEY_NOTIFICATION_TONE] ?: NotificationTone.LUX_CHIME.name
+        try {
+            NotificationTone.valueOf(toneStr)
+        } catch (_: Exception) {
+            NotificationTone.LUX_CHIME
+        }
+    }
+
     val reduceEffects: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[KEY_REDUCE_EFFECTS] ?: false
     }
@@ -117,6 +140,10 @@ class SettingsStore(private val context: Context) {
 
     val playerSettings: Flow<PlayerSettings> = context.dataStore.data.map { preferences ->
         readPlayerSettings(preferences)
+    }
+
+    suspend fun getNotificationToneSync(): NotificationTone {
+        return notificationTone.first()
     }
 
     private fun readPlayerSettings(preferences: Preferences): PlayerSettings {
@@ -149,6 +176,12 @@ class SettingsStore(private val context: Context) {
     suspend fun setThemeMode(mode: AppThemeMode) {
         context.dataStore.edit { preferences ->
             preferences[KEY_THEME] = mode.name
+        }
+    }
+
+    suspend fun setNotificationTone(tone: NotificationTone) {
+        context.dataStore.edit { preferences ->
+            preferences[KEY_NOTIFICATION_TONE] = tone.name
         }
     }
 
