@@ -1,0 +1,258 @@
+<resources>
+    <string name="app_name">Play LuX</string>
+
+    <!-- General -->
+    <string name="ok">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Guardar</string>
+    <string name="delete">Eliminar</string>
+    <string name="restore">Restaurar</string>
+    <string name="close">Cerrar</string>
+    <string name="error">Error</string>
+    <string name="warning">Aviso</string>
+    <string name="coming_soon">Próximamente</string>
+
+    <!-- Navigation modules -->
+    <string name="nav_vault">Bóveda</string>
+    <string name="nav_playlists">Listas</string>
+    <string name="nav_search">Buscar</string>
+    <string name="nav_translator">Traductor</string>
+    <string name="nav_converter">Convertidor</string>
+
+    <!-- Phase Placeholders -->
+    <string name="placeholder_playlists_title">Listas de Reproducción</string>
+    <string name="placeholder_playlists_desc">Organiza tus audiolibros favoritos en colecciones personalizadas.\nDisponible en la Fase 2.</string>
+    <string name="placeholder_search_title">Buscar y Descargar</string>
+    <string name="placeholder_search_desc">Explora catálogos de dominio público (Project Gutenberg, Wikisource e Internet Archive).\nDisponible en la Fase 6.</string>
+    <string name="placeholder_translator_title">Traductor</string>
+    <string name="placeholder_translator_desc">Traducción de textos en el dispositivo mediante ML Kit antes de convertir a audio.\nDisponible en la Fase 4.</string>
+    <string name="placeholder_converter_title">Convertidor de Texto a Audio</string>
+    <string name="placeholder_converter_desc">Importa EPUB, TXT, PDF, DOCX, HTML o MD y conviértelos a audiolibro en segundo plano.\nDisponible en la Fase 5.</string>
+
+    <!-- Vault (Bóveda) -->
+    <string name="vault_title">Mi Bóveda</string>
+    <string name="vault_empty_title">Tu bóveda está vacía</string>
+    <string name="vault_empty_desc">Añade audiolibros o pulsa el botón de prueba para explorar las funciones de reproducción.</string>
+    <string name="search_hint">Buscar por título o autor…</string>
+    <string name="filter_all">Todos</string>
+    <string name="filter_in_progress">En curso</string>
+    <string name="filter_completed">Terminados</string>
+    <string name="filter_favorites">Favoritos</string>
+    <string name="sort_recent">Reciente</string>
+    <string name="sort_title">Título</string>
+    <string name="sort_author">Autor</string>
+    <string name="sort_duration">Duración</string>
+    <string name="btn_create_test_book">Crear libro de prueba (Debug)</string>
+    <string name="test_book_creating">Generando capítulos de audio de prueba…</string>
+    <string name="test_book_created">Libro de prueba creado correctamente</string>
+    <string name="view_mode_grid">Cuadrícula</string>
+    <string name="view_mode_list">Lista</string>
+    <string name="folder_all">Todos los libros</string>
+    <string name="folder_new">Nueva carpeta</string>
+    <string name="folder_rename">Renombrar carpeta</string>
+    <string name="folder_delete">Eliminar carpeta</string>
+    <string name="folder_name_hint">Nombre de la carpeta</string>
+    <string name="folder_delete_confirm">¿Eliminar esta carpeta? Los libros contenidos volverán a la vista general sin carpeta.</string>
+    <string name="move_to_folder">Mover a carpeta</string>
+    <string name="no_folder">Sin carpeta</string>
+    <string name="edit_book">Editar libro</string>
+    <string name="book_title_label">Título del libro</string>
+    <string name="book_author_label">Autor</string>
+    <string name="change_cover">Cambiar portada</string>
+    <string name="edit_chapters">Capítulos</string>
+    <string name="chapter_name_empty_error">El título del capítulo no puede estar vacío</string>
+    <string name="book_title_empty_error">El título del libro no puede estar vacío</string>
+    <string name="delete_book_confirm_title">¿Mover a la papelera?</string>
+    <string name="delete_book_confirm_desc">El libro \"%1$s\" se enviará a Reciclaje. Podrás restaurarlo o se eliminará automáticamente a los 30 días.</string>
+    <string name="share_book_btn">Compartir (.lux)</string>
+    <string name="share_book_unavailable">Compartir en formato .lux disponible en la Fase 7</string>
+
+    <!-- Player -->
+    <string name="player_title">Reproductor</string>
+    <string name="player_play">Reproducir</string>
+    <string name="player_pause">Pausar</string>
+    <string name="player_prev_chapter">Capítulo anterior</string>
+    <string name="player_next_chapter">Capítulo siguiente</string>
+    <string name="player_rewind_15">Retroceder 15s</string>
+    <string name="player_forward_15">Adelantar 15s</string>
+    <string name="player_rewind_30">Retroceder 30s</string>
+    <string name="player_forward_30">Adelantar 30s</string>
+    <string name="player_speed">Velocidad</string>
+    <string name="player_sleep_timer">Temporizador</string>
+    <string name="player_bookmarks">Marcadores</string>
+    <string name="player_bookmark_add">Añadir marcador</string>
+    <string name="player_bookmark_note_hint">Nota del marcador (opcional)</string>
+    <string name="player_bookmarks_empty">Sin marcadores en este libro</string>
+    <string name="sleep_timer_off">Desactivado</string>
+    <string name="sleep_timer_end_of_chapter">Al final del capítulo</string>
+    <string name="sleep_timer_minutes">%1$d minutos</string>
+    <string name="sleep_timer_active">Deteniendo en %1$s</string>
+    <string name="book_corrupted_warning">El archivo de audio está dañado o inaccesible. Se omitirá el capítulo.</string>
+    <string name="continue_reading">Continuar</string>
+    <string name="start_reading">Reproducir</string>
+    <string name="finished_badge">Terminado</string>
+    <string name="part_label">Parte %1$d</string>
+
+    <!-- Settings & Recycle -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_theme">Tema de la aplicación</string>
+    <string name="theme_dark">Oscuro (Predeterminado)</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_system">Seguir al sistema</string>
+    <string name="settings_recycle">Reciclaje</string>
+    <string name="recycle_title">Papelera de Reciclaje</string>
+    <string name="recycle_empty">La papelera está vacía</string>
+    <string name="recycle_auto_delete_notice">Los elementos se eliminan de forma permanente a los 30 días.</string>
+    <string name="recycle_empty_btn">Vaciar papelera</string>
+    <string name="recycle_empty_confirm">¿Vaciar definitivamente todos los libros en la papelera? Esta acción no se puede deshacer.</string>
+    <string name="recycle_delete_permanent">Eliminar definitivamente</string>
+    <string name="recycle_delete_permanent_confirm">¿Eliminar definitivamente \"%1$s\" y sus archivos de audio?</string>
+
+    <!-- Disabled Settings rows -->
+    <string name="settings_language">Idioma de la interfaz</string>
+    <string name="settings_connectivity">Conectividad y descargas Wi-Fi</string>
+    <string name="settings_tts_engine">Convertidor y voz</string>
+    <string name="settings_equalizer">Ecualizador</string>
+    <string name="settings_audio_output">Salida de audio / Bluetooth</string>
+    <string name="settings_storage">Almacenamiento y caché</string>
+    <string name="settings_notifications_permissions">Notificaciones y permisos</string>
+    <string name="settings_security">Bloqueo biométrico con huella / PIN</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Bienvenido a Play LuX</string>
+    <string name="onboarding_subtitle">Tu santuario de audiolibros, privado y en tu dispositivo.</string>
+    <string name="onboarding_notif_title">Control en pantalla de bloqueo</string>
+    <string name="onboarding_notif_desc">Permite las notificaciones para controlar la reproducción de audio desde la barra superior y la pantalla de bloqueo mientras escuchas.</string>
+    <string name="onboarding_notif_btn">Habilitar notificaciones</string>
+    <string name="onboarding_battery_title">Reproducción sin cortes</string>
+    <string name="onboarding_battery_desc">Play LuX funciona 100%% en tu teléfono. Para que la reproducción continúe cuando apagues la pantalla, desactiva la optimización de batería para Play LuX en los ajustes del sistema.</string>
+    <string name="onboarding_start_btn">Empezar a escuchar</string>
+    <string name="onboarding_skip_btn">Omitir</string>
+    <string name="onboarding_page1_title">Play LuX: Lujo en Audio</string>
+    <string name="onboarding_page1_desc">Reproductor y conversor de audiolibros nativo en tu dispositivo. Sin cuentas, sin nube, con privacidad total.</string>
+    <string name="onboarding_page2_title">Tu Bóveda Personal</string>
+    <string name="onboarding_page2_desc">Organiza tus audiolibros y textos en carpetas, crea listas y continúa exactamente donde lo dejaste.</string>
+    <string name="onboarding_page3_title">Traducción y Conversión</string>
+    <string name="onboarding_page3_desc">Importa EPUB, PDF, DOCX o TXT. Tradúcelos y genera audio Opus de alta fidelidad sin conexión a internet.</string>
+    <string name="onboarding_page4_title">Sonido en Segundo Plano</string>
+    <string name="onboarding_page4_desc">Disfruta de control continuo en tu pantalla de bloqueo y con tus auriculares Bluetooth.</string>
+
+    <!-- Bóveda Tabs & Texts -->
+    <string name="tab_audiobooks">Audiolibros</string>
+    <string name="tab_texts">Textos</string>
+    <string name="status_unprepared">Sin preparar</string>
+    <string name="status_prepared">Preparado</string>
+    <string name="status_converted">Convertido</string>
+    <string name="btn_translate">Traducir</string>
+    <string name="btn_convert">Convertir</string>
+    <string name="selected_items_count">%1$d seleccionados</string>
+    <string name="action_clear_selection">Deseleccionar</string>
+    <string name="filter_sort_title">Filtros y Ordenación</string>
+    <string name="filter_by_status">Filtrar por estado</string>
+    <string name="sort_by">Ordenar por</string>
+    <string name="vault_texts_empty_title">No tienes textos guardados</string>
+    <string name="vault_texts_empty_desc">Descarga desde el módulo Buscar o importa tus archivos EPUB, PDF o TXT.</string>
+
+    <!-- Playlists (Fase 2) -->
+    <string name="playlist_new">Nueva lista</string>
+    <string name="playlist_name_hint">Nombre de la lista</string>
+    <string name="playlist_desc_hint">Descripción (opcional)</string>
+    <string name="playlist_empty_title">Sin listas creadas</string>
+    <string name="playlist_empty_desc">Crea colecciones personalizadas combinando libros enteros o capítulos específicos.</string>
+    <string name="playlist_items_count">%1$d elementos</string>
+    <string name="playlist_shuffle">Aleatorio</string>
+    <string name="playlist_repeat">Repetir</string>
+    <string name="playlist_create_dialog_title">Crear nueva lista</string>
+
+    <!-- Search & Downloads (Fase 6) -->
+    <string name="tab_search">Buscar</string>
+    <string name="tab_downloads">Descargas</string>
+    <string name="search_formats_label">Formatos</string>
+    <string name="search_sources_label">Fuentes legales</string>
+    <string name="search_results_label">Catálogo de dominio público</string>
+    <string name="download_in_progress">Descargando…</string>
+    <string name="download_paused">En pausa</string>
+    <string name="download_wifi_notice">Descargas configuradas solo por Wi-Fi y sin duplicados.</string>
+    <string name="download_btn">Descargar</string>
+    <string name="downloads_empty_title">Sin descargas activas</string>
+    <string name="downloads_empty_desc">Los libros y textos que descargues desde las fuentes públicas aparecerán aquí.</string>
+
+    <!-- Translator (Fase 4) -->
+    <string name="translator_select_text">Seleccionar texto a traducir</string>
+    <string name="translator_source_lang">Idioma de origen</string>
+    <string name="translator_target_lang">Idioma de destino</string>
+    <string name="translator_steps_title">Proceso de preparación</string>
+    <string name="translator_step_extract">1. Extracción y estructura</string>
+    <string name="translator_step_detect">2. Detección automática de idioma</string>
+    <string name="translator_step_translate">3. Traducción local (ML Kit)</string>
+    <string name="translator_step_clean">4. Limpieza sintáctica y guiones</string>
+    <string name="translator_step_chapters">5. Agrupación de capítulos</string>
+    <string name="translator_btn_start">Iniciar traducción</string>
+    <string name="translator_btn_pause">Pausar</string>
+    <string name="translator_btn_cancel">Cancelar</string>
+    <string name="translator_preview_title">Vista previa del texto traducido</string>
+
+    <!-- Converter (Fase 5) -->
+    <string name="converter_select_text">Texto preparado</string>
+    <string name="converter_select_voice">Voz de síntesis</string>
+    <string name="converter_audio_lang">Idioma del audio</string>
+    <string name="converter_speed">Velocidad de síntesis</string>
+    <string name="converter_pitch">Tono de voz</string>
+    <string name="converter_pause_paragraph">Pausa entre párrafos</string>
+    <string name="converter_summary_title">Resumen de conversión</string>
+    <string name="converter_est_duration">Duración estimada</string>
+    <string name="converter_est_parts">Partes calculadas</string>
+    <string name="converter_est_size">Tamaño Opus estimado</string>
+    <string name="converter_btn_start">Iniciar conversión a audio</string>
+    <string name="converter_queue_title">Cola de conversión</string>
+    <string name="converter_queue_active">1 activo + 2 en espera</string>
+    <string name="converter_mode_local">Teléfono (Offline)</string>
+    <string name="converter_mode_loquendo">Loquendo (Servidor)</string>
+    <string name="converter_loquendo_title">Configuración Servidor Loquendo</string>
+    <string name="converter_loquendo_url_label">URL del servidor TTS</string>
+    <string name="converter_loquendo_url_hint">http://192.168.1.50:5000/tts</string>
+    <string name="converter_loquendo_token_label">Token / Clave (opcional)</string>
+    <string name="converter_loquendo_voice_label">Voz Loquendo</string>
+    <string name="converter_loquendo_test_btn">Probar conexión y voz Loquendo</string>
+    <string name="converter_loquendo_btn_start">Convertir con Loquendo (Servidor)</string>
+
+    <!-- Tools & Settings Details -->
+    <string name="settings_section_appearance">Apariencia</string>
+    <string name="settings_section_tools">Herramientas</string>
+    <string name="settings_section_engines">Motores y Procesamiento</string>
+    <string name="settings_section_audio">Audio y Reproducción</string>
+    <string name="settings_section_system">Sistema y Privacidad</string>
+    <string name="settings_tools_cache_clean">Limpiar memoria caché</string>
+    <string name="settings_tools_cache_clean_desc">Libera archivos temporales sin afectar tus audiolibros.</string>
+    <string name="settings_tools_cache_clean_confirm">¿Deseas limpiar la memoria caché temporal?</string>
+    <string name="settings_tools_cache_cleaned">Caché limpiada correctamente</string>
+    <string name="settings_tools_test_book_title">Crear audiolibro de prueba (Debug)</string>
+    <string name="settings_tools_test_book_desc">Crea un audiolibro de prueba numerado con síntesis de audio local.</string>
+    <string name="settings_about_title">Acerca de Play LuX</string>
+    <string name="settings_about_desc">Versión 1.0 (Fase 1.2) • 100% en dispositivo</string>
+    <string name="settings_about_intro_btn">Ver introducción</string>
+    <string name="widget_description">Control rápido del reproductor de Play LuX</string>
+    <string name="queue_play_next">Reproducir a continuación</string>
+    <string name="queue_add_end">Añadir a la cola</string>
+    <string name="stats_history_title">Historial y Estadísticas</string>
+    <string name="stats_dialog_title">Historial y estadísticas</string>
+    <string name="stats_total_time">Total</string>
+    <string name="stats_today_time">Hoy</string>
+    <string name="stats_sessions">Sesiones</string>
+    <string name="stats_last_7_days">Últimos 7 días</string>
+    <string name="stats_recent_books">Escuchados recientemente</string>
+    <string name="stats_recent_empty">Aún no has reproducido ningún audiolibro.</string>
+    <string name="settings_stats_subtitle">Tiempo escuchado, racha de 7 días y recientes</string>
+    <string name="share_lux_dialog_title">Compartir audiolibro (.lux)</string>
+    <string name="share_lux_dialog_desc">Empaqueta \"%1$s\" con su audio, portada y texto sincronizado en un archivo portátil .lux.</string>
+    <string name="share_lux_via_apps">Compartir con otra app</string>
+    <string name="export_lux_to_device">Guardar archivo .lux</string>
+    <string name="settings_mono_audio_title">Audio Mono</string>
+    <string name="settings_mono_audio_desc">Combina los canales izquierdo y derecho en un solo canal uniforme</string>
+    <string name="settings_balance_pan">Balance estéreo (Izq / Der)</string>
+    <string name="settings_fade_pause_title">Fundido al pausar y reanudar</string>
+    <string name="settings_fade_pause_desc">Suaviza el volumen al detener o continuar la reproducción</string>
+    <string name="settings_crossfade_title">Crossfade entre capítulos</string>
+    <string name="settings_bass_boost">Refuerzo de graves (BassBoost)</string>
+    <string name="settings_virtualizer">Sonido envolvente (Virtualizer)</string>
+</resources>

@@ -1,0 +1,6 @@
+{
+  "name": "Play LuX",
+  "description": "Reproductor de audiolibros y conversor de texto a audio en el dispositivo",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="lux_background">#1A1030</color>
+    <color name="lux_surface">#241842</color>
+    <color name="lux_surface_variant">#322359</color>
+    <color name="lux_purple">#6A3FA0</color>
+    <color name="lux_purple_light">#8D5BD4</color>
+    <color name="lux_gold">#D4AF37</color>
+    <color name="lux_gold_bright">#F3C642</color>
+    <color name="lux_silver">#C9CED6</color>
+    <color name="lux_silver_bright">#F0F3F8</color>
+    <color name="lux_silver_dark">#8E95A5</color>
+    <color name="lux_error">#CF6679</color>
+</resources>
